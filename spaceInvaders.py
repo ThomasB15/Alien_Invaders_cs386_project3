@@ -19,7 +19,8 @@ def run_game():
     pygame.display.set_caption("Alien Invasion")
 
     # make the play button
-    play_button = Button(ai_settings, screen, "Play")
+    play_button = Button(ai_settings, screen, "Play!")
+    high_score_button = Button(ai_settings, screen, "High Score")
 
     # create an instance to store game stats and create a scoreboard
     stats = GameStats(ai_settings)
@@ -43,7 +44,7 @@ def run_game():
             ship.update()
             gf.update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets)
             gf.update_aliens(ai_settings, screen, stats, sb, ship, aliens, bullets)
-        gf.update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button)
+        gf.update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button, high_score_button)
 
 
 run_game()

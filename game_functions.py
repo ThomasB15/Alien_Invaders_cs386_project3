@@ -4,7 +4,12 @@ from time import sleep
 import pygame
 from bullet import Bullet
 from alien import Alien
+from timer import Timer
+from alien import RedAlien
+from alien import BlueAlien
+from alien import YellowAlien
 
+time_counter = 0
 
 def get_number_aliens_x(ai_settings, alien_width):
     """Determine the number of aliens that fit in a row"""
@@ -15,18 +20,34 @@ def get_number_aliens_x(ai_settings, alien_width):
 
 def get_number_rows(ai_settings, ship_height, alien_height):
     """Determine the number of rows of aliens"""
-    available_space_y = (ai_settings.screen_height - (3 * alien_height) - ship_height)
+    available_space_y = (ai_settings.screen_height - (8 * alien_height) - ship_height)
     number_rows = int(available_space_y / (2 * alien_height))
     return number_rows
 
 
 def create_alien(ai_settings, screen, aliens, alien_number, row_number):
     alien = Alien(ai_settings, screen)
+    if row_number > 0 and row_number <= 2:
+        #alien = BlueAlien(ai_settings, screen)
+        alien.image = pygame.image.load('Blue Alien-1.png.png')
+        alien.alien_color = "Blue"
+
+    elif row_number > 2:
+        #alien = YellowAlien(ai_settings, screen)
+        alien.image = pygame.image.load('Yellow Alien-1.png.png')
+        alien.alien_color = "Yellow"
+    else:
+        #alien = RedAlien(ai_settings, screen)
+        alien.image = pygame.image.load('Red Alien-1.png.png')
+        alien.alien_color = "Red"
+
+
     alien_width = alien.rect.width
     alien.x = alien_width + 2 * alien_width * alien_number
     alien.rect.x = alien.x
     alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
     aliens.add(alien)
+
 
 
 def create_fleet(ai_settings, screen, ship, aliens):
@@ -119,10 +140,24 @@ def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
 
 def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets):
     # check for any bullets that have hit aliens
-    collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+    collisions = pygame.sprite.groupcollide(bullets, aliens, True, False)
     if collisions:
         for aliens in collisions.values():
-            stats.score += ai_settings.alien_points * len(aliens)
+            for alien in aliens:
+                if alien.check_color() == "Yellow" or alien.check_color() == "Yellow2":
+                    stats.score += ai_settings.Yellow_alien_points * len(aliens)
+                    alien.image = pygame.image.load('Blue Alien-1.png.png')
+                    alien.image = pygame.image.load('Red Alien-1.png.png')
+                    alien.image = pygame.image.load('Blue Alien-1.png.png')
+                    alien.kill()
+
+                    #sb.prep_score
+                elif alien.check_color() == "Blue" or alien.check_color() == "Blue2":
+                    stats.score += ai_settings.Blue_alien_points * len(aliens)
+                else:
+                    stats.score += ai_settings.Red_alien_points * len(aliens)
+
+            #stats.score += ai_settings.alien_points * len(aliens)
             sb.prep_score()
         check_high_score(stats, sb)
 
@@ -145,7 +180,7 @@ def fire_bullet(ai_settings, screen, ship, bullets):
         bullets.add(new_bullet)
 
 
-def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button):
+def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button, high_score_button):
     """update images on the screen and flip to the new screen"""
     # redraw the screen
     screen.fill(ai_settings.bg_color)
@@ -159,7 +194,9 @@ def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_bu
     sb.show_score()
     # draw the play button if the game is inactive
     if not stats.game_active:
+        high_score_button.hs_draw_button()
         play_button.draw_button()
+
     # make the most recently drawn screen
     pygame.display.flip()
 
@@ -213,6 +250,37 @@ def check_aliens_bottom(ai_settings,  screen, stats, sb, ship, aliens, bullets):
 
 def update_aliens(ai_settings,  screen, stats, sb, ship, aliens, bullets):
     check_fleet_edges(ai_settings, aliens)
+    global time_counter
+
+    for alien in aliens.sprites():
+        if alien.check_color() == "Red" and time_counter >= 10000:
+            alien.image = pygame.image.load('Red Alien-2.png.png')
+            alien.alien_color = "Red2"
+            time_counter += 1
+        elif alien.check_color() == "Red2" and time_counter > 0 and time_counter < 1000:
+            alien.image = pygame.image.load('Red Alien-1.png.png')
+            alien.alien_color = "Red"
+            time_counter += 1
+        elif alien.check_color() == "Blue" and time_counter >= 10000:
+            alien.image = pygame.image.load('Blue Alien-2.png.png')
+            alien.alien_color = "Blue2"
+            time_counter += 1
+        elif alien.check_color() == "Blue2" and time_counter > 0 and time_counter < 1000:
+            alien.image = pygame.image.load('Blue Alien-1.png.png')
+            alien.alien_color = "Blue"
+            time_counter += 1
+        elif alien.check_color() == "Yellow" and time_counter >= 10000:
+            alien.image = pygame.image.load('Yellow Alien-2.png.png')
+            alien.alien_color = "Yellow2"
+            time_counter += 1
+        elif alien.check_color() == "Yellow2" and time_counter > 0 and time_counter < 1000:
+            alien.image = pygame.image.load('Yellow Alien-1.png.png')
+            alien.alien_color = "Yellow"
+            time_counter += 1
+        else:
+            time_counter += 1
+        if time_counter >= 20000:
+            time_counter = 0
 
     aliens.update()
     # look for alien ship collisions
