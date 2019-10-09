@@ -8,7 +8,7 @@ from game_stats import GameStats
 from scoreboard import Scoreboard
 from button import Button
 import game_functions as gf
-import time
+
 
 
 def run_game():
