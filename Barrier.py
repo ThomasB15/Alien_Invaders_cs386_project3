@@ -12,5 +12,5 @@ class Barrier(sprite.Sprite):
         self.row = row
         self.column = column
 
-    def update(self, keys, *args):
-        game.screen.blit(self.image, self.rect)
+    def blitme(self):
+        self.screen.blit(self.image, self.rect)

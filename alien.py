@@ -46,6 +46,14 @@ class Alien(Sprite):
             return "Blue2"
         elif self.alien_color == "Yellow2":
             return "Yellow2"
+        elif self.alien_color == "explode1":
+            return "explode1"
+        elif self.alien_color == "explode2":
+            return "explode2"
+        elif self.alien_color == "explode3":
+            return "explode3"
+        elif self.alien_color == "explode4":
+            return "explode4"
         else:
             return "Yellow"
 
